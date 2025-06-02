@@ -13,54 +13,63 @@ const requestConfig = {
     headers: {
         'Content-Type': 'application/json'
     }
-}
+};
 
-export default function Checkout(){
+export default function Checkout() {
     const cartCtx = useContext(CartContext);
     const userProgressCtx = useContext(UserProgressContext);
 
-    const {data, 
-           isFetching: isSending, 
-           error, 
-           sendRequest,
-           clearData} 
-        = useHttp('http://localhost:3000/orders', 
-            requestConfig);
+    const {
+        data,
+        isFetching: isSending,
+        error,
+        sendRequest,
+        clearData,
+    } = useHttp('http://localhost:3000/orders', requestConfig);
 
     const isOpen = userProgressCtx.progress === "checkout";
 
-    function handleCloseCheckout(){
+    function handleCloseCheckout() {
         userProgressCtx.hideCheckout();
     }
 
-    function handleFnish(){
+    async function clearTempCart() {
+        try {
+            await fetch('http://localhost:3000/temp-cart/clear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+        } catch (err) {
+            console.error('Failed to clear temp cart', err);
+        }
+    }
+
+    async function handleFinish() {
         userProgressCtx.hideCheckout();
         cartCtx.clearCart();
+        await clearTempCart();  // Clear temp-cart.json on successful checkout
         clearData();
     }
 
-    async function checkoutAction(prevState, fd){
+    async function checkoutAction(prevState, fd) {
         const customerData = Object.fromEntries(fd.entries());
 
         await sendRequest(
             JSON.stringify({
-                order:{
+                order: {
                     items: cartCtx.items,
-                    customer: customerData
-                }
+                    customer: customerData,
+                },
             })
         );
     }
 
-    const [formState, formAction, pending]
-        = useActionState(checkoutAction, null);
+    const [formState, formAction, pending] = useActionState(checkoutAction, null);
 
     let actions = (
         <>
-            <Button type="button" 
-                    textOnly={true}
-                    onClick={handleCloseCheckout}>
-                    Close
+            <Button type="button" textOnly={true} onClick={handleCloseCheckout}>
+                Close
             </Button>
 
             <Button textOnly={false} type="submit">
@@ -69,20 +78,18 @@ export default function Checkout(){
         </>
     );
 
-    if(pending){
-        actions = (<span>Sending order data...</span>)
+    if (pending) {
+        actions = <span>Sending order data...</span>;
     }
 
-    if(data && !error){
+    if (data && !error) {
         return (
             <Modal open={isOpen} onClose={handleCloseCheckout}>
                 <h2>Success!</h2>
                 <p>Your order was placed successfully.</p>
 
                 <p className="modal-actions">
-                    <Button onClick={handleFnish}>
-                        Okay
-                    </Button>
+                    <Button onClick={handleFinish}>Okay</Button>
                 </p>
             </Modal>
         );
@@ -94,33 +101,21 @@ export default function Checkout(){
                 <h2>Checkout</h2>
                 <p>Total Amount: {cartCtx.cartTotal}</p>
 
-                <Input label="Full Name" 
-                       id="name" 
-                       type="text"/>
+                <Input label="Full Name" id="name" type="text" />
 
-                <Input label="E-Mail Address" 
-                       id="email" 
-                       type="email"/>
+                <Input label="E-Mail Address" id="email" type="email" />
 
-                <Input label="Street" type="text" id="street"/>
+                <Input label="Street" type="text" id="street" />
 
                 <div className="control-row">
-                    <Input label="Postal Code" 
-                           type="text" 
-                           id="postal-code"/>
+                    <Input label="Postal Code" type="text" id="postal-code" />
 
-                    <Input label="City" 
-                           type="text" 
-                           id="city"/>
+                    <Input label="City" type="text" id="city" />
                 </div>
 
-                {error &&
-                <Error title="Failed to submit order"
-                       message={error}/>}
+                {error && <Error title="Failed to submit order" message={error} />}
 
-                <p className="modal-actions">
-                    {actions}
-                </p>
+                <p className="modal-actions">{actions}</p>
             </form>
         </Modal>
     );

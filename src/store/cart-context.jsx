@@ -1,109 +1,116 @@
-import { useReducer } from "react";
-import { createContext } from "react";
-import { currencyFormatter } from "../util/formatting";
+import { useReducer, useEffect, createContext } from 'react';
+import { currencyFormatter } from '../util/formatting';
 
 const CartContext = createContext({
-    items:[],
-    addItem: (item)=>{},
-    removeItem: (id)=>{},
-    clearCart:()=>{}
+  items: [],
+  addItem: (item) => {},
+  removeItem: (id) => {},
+  clearCart: () => {},
 });
 
-function cartReducer(state, action){
-    //state -> previous state
-    //action -> new state
+function cartReducer(state, action) {
+  if (action.type === 'initialize') {
+    return { ...state, items: action.items };
+  }
 
-    if (action.type === 'add_item'){
-        const existingCartItemIndex = state.items.findIndex(
-            (item)=> item.id === action.item.id
-        ); 
-        
-        const updatedItems = [...state.items];
-        
-        if (existingCartItemIndex > -1){
-            const existingItem = state.items[existingCartItemIndex];
-            const updatedItem = {
-                ...existingItem,
-                quantity: existingItem.quantity + 1
-            };
+  if (action.type === 'add_item') {
+    const existingIndex = state.items.findIndex(i => i.id === action.item.id);
+    const updatedItems = [...state.items];
 
-            updatedItems[existingCartItemIndex] = updatedItem;
-        }else{
-            updatedItems.push({...action.item, quantity:1});
-        }
-
-        return {...state, items: updatedItems}
+    if (existingIndex >= 0) {
+      const existingItem = updatedItems[existingIndex];
+      updatedItems[existingIndex] = { ...existingItem, quantity: existingItem.quantity + 1 };
+    } else {
+      updatedItems.push({ ...action.item, quantity: 1 });
     }
 
-    if (action.type === 'remove_item'){
-        const existingCartItemIndex = state.items.findIndex(
-            (item)=> item.id === action.id
-        );
+    return { ...state, items: updatedItems };
+  }
 
-        const existingCartItem = state.items[existingCartItemIndex];
+  if (action.type === 'remove_item') {
+    const existingIndex = state.items.findIndex(i => i.id === action.id);
+    if (existingIndex < 0) return state;
 
-        const updatedItems =[...state.items]
+    const existingItem = state.items[existingIndex];
+    let updatedItems = [...state.items];
 
-        if (existingCartItem.quantity === 1){
-            updatedItems.splice(existingCartItemIndex, 1);
-        }
-        else{
-            const updatedItem = {
-                ...existingCartItem,
-                quantity : existingCartItem.quantity - 1
-            };
-            updatedItems[existingCartItemIndex] = updatedItem;
-        }
-
-        return {...state, items:updatedItems};
+    if (existingItem.quantity === 1) {
+      updatedItems.splice(existingIndex, 1);
+    } else {
+      updatedItems[existingIndex] = { ...existingItem, quantity: existingItem.quantity - 1 };
     }
 
-    if (action.type === 'clear_cart'){
-        return {...state, items:[]};
-    }
+    return { ...state, items: updatedItems };
+  }
 
-    return state;
+  if (action.type === 'clear_cart') {
+    return { ...state, items: [] };
+  }
+
+  return state;
 }
 
-export function CartContextProvider({children}){
-    const [cart, dispatchCartAction] 
-                = useReducer(cartReducer, {items : []});
+export function CartContextProvider({ children }) {
+  const [cart, dispatch] = useReducer(cartReducer, { items: [] });
 
-    function addItem(item){
-        dispatchCartAction({type:'add_item', item: item});
+  // Fetch cart from backend once on mount
+  useEffect(() => {
+    async function fetchCart() {
+      try {
+        const response = await fetch('http://localhost:3000/temp-cart');
+        if (!response.ok) throw new Error('Failed to fetch cart');
+        const data = await response.json();
+        dispatch({ type: 'initialize', items: data || [] });
+      } catch (err) {
+        console.error(err);
+      }
     }
+    fetchCart();
+  }, []);
 
-    function removeItem(id){
-        dispatchCartAction({type:'remove_item', id: id});
+  // Sync cart with backend whenever items change
+  useEffect(() => {
+    async function syncCart() {
+      try {
+        await fetch('http://localhost:3000/temp-cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cart.items),
+        });
+      } catch (err) {
+        console.error('Failed to sync cart:', err);
+      }
     }
+    syncCart();
+  }, [cart.items]);
 
-    function clearCart(){
-        dispatchCartAction({type: 'clear_cart'})
-    }
+  function addItem(item) {
+    dispatch({ type: 'add_item', item });
+  }
 
-    let cartTotal = 0;
+  function removeItem(id) {
+    dispatch({ type: 'remove_item', id });
+  }
 
-    cart.items.map(
-        (item)=> 
-            cartTotal += item.price * 70 * item.quantity);
+  function clearCart() {
+    dispatch({ type: 'clear_cart' });
+  }
 
+  const cartTotal = cart.items.reduce((total, item) => total + item.price * 70 * item.quantity, 0);
 
-
-    const cartContext = {
-        items : cart.items,
-        cartTotal : currencyFormatter.format(cartTotal),
+  return (
+    <CartContext.Provider
+      value={{
+        items: cart.items,
+        cartTotal: currencyFormatter.format(cartTotal),
         addItem,
         removeItem,
-        clearCart
-    };
-
-    console.log(cartContext);
-
-    return (
-    <CartContext.Provider value={cartContext}>
-        {children}
+        clearCart,
+      }}
+    >
+      {children}
     </CartContext.Provider>
-    );
+  );
 }
 
 export default CartContext;
