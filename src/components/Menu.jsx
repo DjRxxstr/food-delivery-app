@@ -29,6 +29,8 @@ export default function Menu(){
                     <MealItem meal={meal} key={meal.id}/>
                 ))}
             </div>
+
+            
             
         </main>
     );

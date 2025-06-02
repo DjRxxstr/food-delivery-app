@@ -1,4 +1,4 @@
-import { useReducer, useEffect, createContext } from 'react';
+import { useReducer, useEffect, createContext, useState } from 'react';
 import { currencyFormatter } from '../util/formatting';
 
 const CartContext = createContext({
@@ -52,6 +52,7 @@ function cartReducer(state, action) {
 
 export function CartContextProvider({ children }) {
   const [cart, dispatch] = useReducer(cartReducer, { items: [] });
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Fetch cart from backend once on mount
   useEffect(() => {
@@ -60,29 +61,46 @@ export function CartContextProvider({ children }) {
         const response = await fetch('http://localhost:3000/temp-cart');
         if (!response.ok) throw new Error('Failed to fetch cart');
         const data = await response.json();
-        dispatch({ type: 'initialize', items: data || [] });
+        console.log('Fetched cart data:', data);
+        if (Array.isArray(data)) {
+          console.log('Dispatching cart data:', data);
+          dispatch({ type: 'initialize', items: data });
+        } else {
+          console.error('Invalid cart data format:', data);
+          dispatch({ type: 'initialize', items: [] });
+        }
+        setIsInitialized(true);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching cart:', err);
+        dispatch({ type: 'initialize', items: [] });
+        setIsInitialized(true);
       }
     }
     fetchCart();
   }, []);
 
-  // Sync cart with backend whenever items change
+  // Sync cart with backend whenever items change, but only after initialization
   useEffect(() => {
+    if (!isInitialized) return;
+
     async function syncCart() {
       try {
-        await fetch('http://localhost:3000/temp-cart', {
+        console.log('Syncing cart data:', cart.items);
+        const response = await fetch('http://localhost:3000/temp-cart', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(cart.items),
         });
+        if (!response.ok) {
+          throw new Error('Failed to sync cart');
+        }
+        console.log('Cart sync successful');
       } catch (err) {
         console.error('Failed to sync cart:', err);
       }
     }
     syncCart();
-  }, [cart.items]);
+  }, [cart.items, isInitialized]);
 
   function addItem(item) {
     dispatch({ type: 'add_item', item });

@@ -1,13 +1,35 @@
 import fs from 'node:fs/promises';
 import bodyParser from 'body-parser';
 import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// CORS Headers for your frontend requests
+const TEMP_CART_PATH = path.join(__dirname, 'data', 'temp-cart.json');
+
+
+async function initializeTempCart() {
+  try {
+    const data = await fs.readFile(TEMP_CART_PATH, 'utf8');
+    const parsedData = JSON.parse(data);
+    if (!Array.isArray(parsedData)) {
+      await fs.writeFile(TEMP_CART_PATH, JSON.stringify([]));
+    }
+  } catch (error) {
+    await fs.writeFile(TEMP_CART_PATH, JSON.stringify([]));
+  }
+}
+
+
+initializeTempCart();
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*'); 
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
@@ -18,7 +40,7 @@ app.use((req, res, next) => {
 // Get available meals
 app.get('/meals', async (req, res) => {
   try {
-    const meals = await fs.readFile('./data/available-meals.json', 'utf8');
+    const meals = await fs.readFile(path.join(__dirname, 'data', 'available-meals.json'), 'utf8');
     res.json(JSON.parse(meals));
   } catch (error) {
     res.status(500).json({ message: 'Failed to load meals' });
@@ -47,12 +69,12 @@ app.post('/orders', async (req, res) => {
   };
 
   try {
-    const ordersRaw = await fs.readFile('./data/orders.json', 'utf8');
+    const ordersRaw = await fs.readFile(path.join(__dirname, 'data', 'orders.json'), 'utf8');
     const allOrders = JSON.parse(ordersRaw);
     allOrders.push(newOrder);
-    await fs.writeFile('./data/orders.json', JSON.stringify(allOrders));
+    await fs.writeFile(path.join(__dirname, 'data', 'orders.json'), JSON.stringify(allOrders));
     // Clear temp cart after order
-    await fs.writeFile('./data/temp-cart.json', JSON.stringify([]));
+    await fs.writeFile(TEMP_CART_PATH, JSON.stringify([]));
     res.status(201).json({ message: 'Order created!' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to process order.' });
@@ -62,9 +84,13 @@ app.post('/orders', async (req, res) => {
 // Get current cart data
 app.get('/temp-cart', async (req, res) => {
   try {
-    const data = await fs.readFile('./data/temp-cart.json', 'utf8');
-    res.json(JSON.parse(data));
+    const data = await fs.readFile(TEMP_CART_PATH, 'utf8');
+    console.log('Raw data from file:', data);
+    const parsedData = JSON.parse(data);
+    console.log('Parsed data:', parsedData);
+    res.json(parsedData);
   } catch (error) {
+    console.error('Error reading temp-cart:', error);
     res.status(500).json({ message: 'Could not fetch temp cart data.' });
   }
 });
@@ -73,9 +99,11 @@ app.get('/temp-cart', async (req, res) => {
 app.post('/temp-cart', async (req, res) => {
   const cartData = req.body;
   try {
-    await fs.writeFile('./data/temp-cart.json', JSON.stringify(cartData));
+    console.log('Writing to temp-cart:', cartData);
+    await fs.writeFile(TEMP_CART_PATH, JSON.stringify(cartData));
     res.status(200).json({ message: 'Temp cart updated.' });
   } catch (error) {
+    console.error('Error writing to temp-cart:', error);
     res.status(500).json({ message: 'Could not update temp cart.' });
   }
 });
@@ -83,7 +111,7 @@ app.post('/temp-cart', async (req, res) => {
 // Clear cart endpoint (optional)
 app.post('/temp-cart/clear', async (req, res) => {
   try {
-    await fs.writeFile('./data/temp-cart.json', JSON.stringify([]));
+    await fs.writeFile(TEMP_CART_PATH, JSON.stringify([]));
     res.status(200).json({ message: 'Temp cart cleared' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to clear temp cart' });

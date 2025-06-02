@@ -27,10 +27,10 @@ export default function Header(){
 
             <nav>
                 <Button textOnly={true} 
-                        className="" 
+                        className="cart-button" 
                         onClick={handleShowCart}
                         >
-                    Cart ({numberOfItems})
+                    <i class="fa fa-shopping-cart"></i> Cart ({numberOfItems})
                 </Button>
             </nav>
         </header>

@@ -15,10 +15,17 @@ body {
 }
 
 #main-header {
+  position: fixed; /* Fix it to the top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Make sure it's on top of other content */
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 3rem 10%;
+  background: linear-gradient(rgb(8, 0, 0), #2e291e);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* Optional: gives it a nice shadow */
 }
 
 #main-header #title {
@@ -36,7 +43,7 @@ body {
 }
 
 #main-header button {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-family: 'Lato', sans-serif;
 }
 
@@ -59,6 +66,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   gap: 1rem;
+  margin-top: 15rem;
 }
 
 .meal-item {
@@ -212,13 +220,18 @@ h1 {
   color: #1f1a09;
   padding: 0.5rem 1.5rem;
   border-radius: 4px;
+  transition: transform 0.1s ease-in-out;
 }
 
-.button:hover,
-.button:active {
+.button:hover {
   background-color: #ffab04;
   border-color: #ffab04;
   color: #1f1a09;
+  transform: scale(1.2);
+}
+
+.button:active{
+  transform: scale(0.9);
 }
 
 .text-button {
@@ -227,11 +240,18 @@ h1 {
   background-color: transparent;
   border: none;
   color: #ffc404;
+  transition: transform 0.1s ease-in-out;
 }
 
-.text-button:hover,
-.text-button:active {
+
+.text-button:hover{
   color: #ffab04;
+  transform: scale(1.1);
+  font-weight: bold;
+}
+
+.text-button:active{
+  transform: scale(0.9);
 }
 
 .modal {
@@ -243,6 +263,14 @@ h1 {
   width: 80%;
   max-width: 40rem;
   animation: fade-slide-up 0.3s ease-out forwards;
+}
+
+.modal.item-added {
+  position: fixed;
+  background-color: #04a541;
+  color: white;
+  font-size: bold;
+  top: 0;
 }
 
 .modal::backdrop {
@@ -270,6 +298,8 @@ h1 {
 .error p {
   margin: 0;
 }
+
+
 
 @keyframes fade-slide-up {
   from {
