@@ -1,0 +1,25 @@
+ECHO is on.
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Build output
+build/
+dist/
+
+# Environment variables
+.env
+
+# Backend data files (ignore orders, temp cart, etc.)
+backend/*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional: VSCode settings
+.vscode/
