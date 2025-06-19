@@ -9,10 +9,22 @@ import { fetchMealsData } from "./store/meals-action";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCartData, sendCartData } from "./store/cart-actions";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 let isInitial = true;
 
 function App() {
+  useEffect(() => {
+    const auth = getAuth();
+    signInAnonymously(auth)
+      .then(() => {
+        console.log("Signed in anonymously");
+      })
+      .catch((error) => {
+        console.error("Anonymous sign-in error:", error);
+      });
+  }, []);
+  
   const dispatch = useDispatch();
   const [mealsIsLoading, setMealsIsLoading] = useState(false);
   const [cartIsLoaded, setCartIsLoaded] = useState(false);
