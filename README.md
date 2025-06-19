@@ -1,39 +1,43 @@
 # Food Delivery App
 
-A modern food delivery application built with React and Firebase Realtime Database. This application allows users to browse food items, add them to the cart, and manage their orders.
+A modern food delivery application built with **React**, **Redux**, and **Firebase**. This application allows users to browse food items, manage their cart, and place orders in real-time using Firebase Realtime Database.
 
-## Features
+## 🔧 Features
 
-- Browse food items
-- Add items to cart
-- Remove items from cart
-- Place orders via checkout
-- Real-time cart synchronization using Firebase
-- Responsive design
-- Currency formatting
+- 🥘 Browse dynamic meal listings
+- 🛒 Add and remove items from cart
+- 💾 Temporary cart data storage in Firebase
+- ✅ Order placement and confirmation
+- 🌐 Global state management with Redux Toolkit
+- 📡 Real-time sync with Firebase Realtime Database
+- 📱 Responsive and mobile-friendly design
 
-## Prerequisites
+## 🚀 Tech Stack
 
-Before you begin, ensure you have the following installed:
+- **Frontend**: React (with Vite)
+- **State Management**: Redux + Redux Toolkit
+- **Backend**: Firebase Realtime Database
+- **Authentication**: Anonymous sign-in via Firebase Auth
+- **Styling**: Tailwind CSS or plain CSS Modules (based on your project)
+
+## 📁 Project Structure
+
+```
+food-delivery-app/
+├── src/               # React + Redux application
+│   ├── components/    # UI components
+│   ├── store/         # Redux slices and actions
+│   └── firebase.js    # Firebase initialization
+├── public/            # Static files
+└── package.json       # Project metadata and scripts
+```
+
+## ✅ Prerequisites
 
 - Node.js (v14 or higher)
 - npm (Node Package Manager)
 
-## Project Structure
-
-```
-food-delivery-app/
-├── public/            # Static files
-├── src/               # React application source code
-│   ├── components/    # UI components
-│   ├── store/         # Redux slices and actions
-│   ├── firebase.js    # Firebase configuration and initialization
-│   └── App.jsx        # Main application entry
-├── package.json       # Project dependencies
-└── vite.config.js     # Vite configuration
-```
-
-## Setup Instructions
+## 📦 Setup Instructions
 
 ### 1. Clone the Repository
 
@@ -48,11 +52,20 @@ cd food-delivery-app
 npm install
 ```
 
-### 3. Configure Firebase
+### 3. Start the Development Server
 
-- Go to [Firebase Console](https://console.firebase.google.com/) and create a project.
-- Enable **Realtime Database**.
-- Set the database rules temporarily to allow public access:
+```bash
+npm run dev
+```
+
+App will be available at `http://localhost:5173`
+
+## 🔐 Firebase Configuration
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a project and set up Realtime Database
+3. Use the following database rules for development:
+4. (Note - If you want proper authentication, enable desired type of authentication)
 
 ```json
 {
@@ -63,50 +76,14 @@ npm install
 }
 ```
 
-- Get your Firebase config and update `src/firebase.js`:
 
-```js
-// src/firebase.js
-import { initializeApp } from "firebase/app";
+## 📜 Available Scripts
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-
-export const app = initializeApp(firebaseConfig);
-```
-
-### 4. Start the App
-
-```bash
-npm run dev
-```
-
-The app will run at `http://localhost:5173`.
-
-## Development Notes
-
-- Built with React and Redux Toolkit
-- Uses Firebase Realtime Database for meals, cart, and order data
-- No authentication is used (open database for demo)
-- Firebase is used directly through REST API calls
-
-## Available Scripts
-
-- `npm run dev` – Start the development server
-- `npm run build` – Build the app for production
+- `npm run dev` – Start development server
+- `npm run build` – Create production build
 - `npm run preview` – Preview the production build
+- `npm run lint` – Run ESLint
 
-## Deployment
-
-You can deploy this app to **Vercel**, **Netlify**, or **Firebase Hosting**. Just ensure Firebase config is valid and public rules are in place if using without auth.
-
-## License
+## 📄 License
 
 This project is licensed under the ISC License.
