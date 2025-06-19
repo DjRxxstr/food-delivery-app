@@ -3,14 +3,22 @@ import { currencyFormatter } from "../util/formatting";
 import Button from "./UI/Button";
 import CartContext from "../store/cart-context";
 import Modal from "./UI/Modal";
+import { useDispatch, useSelector } from "react-redux";
+import { cartActions } from "../store/cart";
 
 export default function MealItem({ meal }) {
+  const dispatch = useDispatch();
+
   const [isOpen, setIsOpen] = useState(false);
 
-  const cartCtx = useContext(CartContext);
+  // const cartCtx = useContext(CartContext);
 
-  function handleAddMealToCart() {
-    cartCtx.addItem(meal);
+  // const cartItems = useSelector(state => state.cart);
+
+
+
+  function handleAddMealToCart(item) {
+    dispatch(cartActions.addToCart({...item, quantity: 1}))
     setIsOpen(true);
   }
 
@@ -26,7 +34,6 @@ export default function MealItem({ meal }) {
       }, 2500);
     }
 
-    
     return () => clearTimeout(timer);
   }, [isOpen]);
 
@@ -34,7 +41,7 @@ export default function MealItem({ meal }) {
     <div className="meal-item">
       <article>
         <img
-          src={`http://localhost:3000/${meal.image}`}
+          src={meal.image}
           alt={meal.name}
         />
 
@@ -50,7 +57,7 @@ export default function MealItem({ meal }) {
           <Button
             textOnly={false}
             className="meal-item-actions"
-            onClick={handleAddMealToCart}
+            onClick={()=>handleAddMealToCart(meal)}
           >
             Add to Cart
           </Button>

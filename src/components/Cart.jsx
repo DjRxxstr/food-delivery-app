@@ -5,53 +5,67 @@ import { currencyFormatter } from "../util/formatting";
 import Button from "./UI/Button";
 import UserProgressContext from "../store/user-progress-context";
 import CartItem from "./CartItem";
+import {useDispatch, useSelector} from 'react-redux';
+import { userProgressActions } from "../store/user-progress";
+import { cartActions } from "../store/cart";
 
 export default function Cart(){
-    const cartCtx = useContext(CartContext);
-    const userProgressCtx = useContext(UserProgressContext);
+    const dispatch = useDispatch();
+    const userProgress = useSelector(
+        state=>state.progress
+    )
 
-    const isOpen = (userProgressCtx.progress === 'cart');
+    const isOpen = (userProgress === 'cart');
 
-    function handleCloseCart(){
-        userProgressCtx.hideCart();
-    }
+    const cartItems = useSelector(state => state.cart);
+
+    let cartTotal = 0;
+
+    cartItems.forEach((item)=>{
+        cartTotal = cartTotal + (item.quantity * item.price);
+    })
+
 
     function handleAddItem(item){
-        cartCtx.addItem(item);
+        dispatch(cartActions.addToCart(item));
         console.log(item);
     }
 
-    function handleRemoveItem(id){
-        cartCtx.removeItem(id);
+    function handleRemoveItem(item){
+        dispatch(cartActions.removeFromCart(item));
     }
 
     function handleClearCart(){
-        cartCtx.clearCart();
+        dispatch(cartActions.clearCart());
     }
 
     function handleShowCheckout(){
-        userProgressCtx.showCheckout();
+        dispatch(userProgressActions.showCheckout());
+    }
+
+    function handleCloseCart() {
+        dispatch(userProgressActions.hideCart());
     }
 
     return (
         <Modal className="cart" 
                open={isOpen}
-               onClose={isOpen === true ? handleCloseCart : null}>
+               onClose={isOpen ? handleCloseCart : null}>
             <h2>Your Cart</h2>
-            {cartCtx.items.length === 0 ? (<p>
+            {cartItems.length === 0 ? (<p>
                 No items added to cart. Close to add meals.
             </p>): (<><ul>
-                {cartCtx.items.map(
+                {cartItems.map(
                     (item) => (
                         <CartItem key={item.id} 
                                   item={item}
                                   onAdd={()=>handleAddItem(item)}
-                                  onRemove={()=>handleRemoveItem(item.id)}/>
+                                  onRemove={()=>handleRemoveItem(item)}/>
                     )
                 )}
             </ul>
             <p className="cart-total">
-                {cartCtx.cartTotal}
+                {currencyFormatter.format(cartTotal * 70)}
             </p></>)}
             
 
@@ -61,10 +75,12 @@ export default function Cart(){
                             Close
                 </Button>
 
-                {cartCtx.items.length !== 0 ? (
+                {cartItems.length !== 0 ? (
                     <>
                         <Button textOnly={false}
-                            onClick={handleShowCheckout}>
+                            onClick={
+                                handleShowCheckout
+                                }>
                                 Go to Checkout
                         </Button>
 
@@ -76,10 +92,6 @@ export default function Cart(){
                     )
                     :
                     (<></>)}
-
-                
-
-                
             </p>
         </Modal>
     );
