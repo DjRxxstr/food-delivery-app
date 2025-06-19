@@ -1,7 +1,7 @@
 import { currencyFormatter } from "../util/formatting";
 
-export default function CartItem({item, onAdd, onRemove, ...props}){
-    return(
+export default function CartItem({ item, onAdd, onRemove, ...props }) {
+    return (
         <li className="cart-item" {...props}>
             <p>{item.name} - {item.quantity} X {currencyFormatter.format(item.price * 70)}</p>
             <p className="cart-item-actions">

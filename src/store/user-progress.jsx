@@ -1,20 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const userProgressSlice = createSlice({
-    name:'progress',
+    name: 'progress',
     initialState: '',
     reducers: {
-        showCart(state){
+        showCart(state) {
             return 'cart';
         },
 
-        hideCart(state){
+        hideCart(state) {
             return '';
         },
-        showCheckout(state){
+        showCheckout(state) {
             return 'checkout';
         },
-        hideCheckout(state){
+        hideCheckout(state) {
             return '';
         }
     }

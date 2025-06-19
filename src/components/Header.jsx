@@ -1,8 +1,5 @@
-import { useContext } from 'react';
 import logoImg from '../assets/logo.jpg';
 import Button from './UI/Button';
-import CartContext from '../store/cart-context';
-import UserProgressContext from '../store/user-progress-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { userProgressActions } from '../store/user-progress';
 

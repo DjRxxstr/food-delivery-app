@@ -5,11 +5,13 @@ import cartSlice from "./cart";
 import userProgressSlice from "./user-progress";
 
 const store = configureStore(
-    {reducer:{
-        meals: mealsSlice.reducer,
-        cart: cartSlice.reducer,
-        progress: userProgressSlice.reducer,
-    }}
+    {
+        reducer: {
+            meals: mealsSlice.reducer,
+            cart: cartSlice.reducer,
+            progress: userProgressSlice.reducer,
+        }
+    }
 );
 
 export default store;

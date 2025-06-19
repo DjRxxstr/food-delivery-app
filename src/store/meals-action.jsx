@@ -6,7 +6,7 @@ export const fetchMealsData = (setMealsIsLoading) => {
         const fetchMeals = async () => {
             const response = await fetch('https://food-delivery-app-db-638c6-default-rtdb.firebaseio.com/available-meals.json');
 
-            if (!response.ok){
+            if (!response.ok) {
                 throw new Error('Could not fetch meals data');
             }
 
@@ -15,13 +15,13 @@ export const fetchMealsData = (setMealsIsLoading) => {
             return Object.values(data);
         };
 
-        try{
+        try {
             const mealsData = await fetchMeals();
             dispatch(mealsActions.setMeals(mealsData));
-        } catch(error){
+        } catch (error) {
             //...
             console.log(error.message);
-        } finally{
+        } finally {
             setMealsIsLoading(false);
         }
     }

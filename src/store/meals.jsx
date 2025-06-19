@@ -6,7 +6,7 @@ const mealsSlice = createSlice({
     name: 'meals',
     initialState: initialState,
     reducers: {
-        setMeals(state, action){
+        setMeals(state, action) {
             return action.payload;
         },
     }
