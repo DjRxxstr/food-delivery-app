@@ -19,6 +19,7 @@ function App() {
 
   // const mealsData = useSelector(state => state.meals);
   const cartItems = useSelector(state=>state.cart)
+  const userProgress = useSelector(state => state.progress);
 
   useEffect(
     () => {
@@ -51,7 +52,7 @@ function App() {
           (<p id="meals" className="center">Loading Meals...</p>) : (<Menu></Menu>)}
           
           <Cart></Cart>
-          <Checkout></Checkout>
+          <Checkout />
     </>
   );
 }

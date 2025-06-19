@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
 const userProgressSlice = createSlice({
     name:'progress',
     initialState: '',
