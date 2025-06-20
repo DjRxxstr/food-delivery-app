@@ -5,8 +5,9 @@ import CartItem from "./CartItem";
 import { useDispatch, useSelector } from 'react-redux';
 import { userProgressActions } from "../store/user-progress";
 import { cartActions } from "../store/cart";
+import Error from "./Error";
 
-export default function Cart() {
+export default function Cart({isError, message}) {
     const dispatch = useDispatch();
     const userProgress = useSelector(
         state => state.progress
@@ -48,8 +49,13 @@ export default function Cart() {
         <Modal className="cart"
             open={isOpen}
             onClose={isOpen ? handleCloseCart : null}>
-            <h2>Your Cart</h2>
-            {cartItems.length === 0 ? (<p>
+
+                
+                <h2>Your Cart</h2>
+
+                {isError && <Error title="ERROR!" message={message} className="error in-modal"/>}
+
+            {!isError && cartItems.length === 0 ? (<p>
                 No items added to cart. Close to add meals.
             </p>) : (<><ul>
                 {cartItems.map(
@@ -90,6 +96,7 @@ export default function Cart() {
                     :
                     (<></>)}
             </p>
+            
         </Modal>
     );
 }

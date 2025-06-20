@@ -289,11 +289,15 @@ h1 {
 .error {
   width: 90%;
   max-width: 25rem;
-  margin: 2rem auto;
+  margin: 12rem auto 2rem auto;
   padding: 1rem;
   background-color: #f9b8b8;
   color: #6d0b0b;
   border-radius: 6px;
+}
+
+.error.in-modal {
+  margin: 1rem auto; /* fix inside modal */
 }
 
 .error h2 {

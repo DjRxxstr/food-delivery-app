@@ -1,6 +1,6 @@
 import { cartActions } from "./cart";
 
-export const sendCartData = (cartItems) => {
+export const sendCartData = (cartItems, setSendCartError) => {
     return async (dispatch) => {
         const sendRequest = async () => {
             const response = await fetch('https://food-delivery-app-db-638c6-default-rtdb.firebaseio.com/temp-cart.json',
@@ -29,12 +29,13 @@ export const sendCartData = (cartItems) => {
             await sendRequest();
         }
         catch (error) {
+            setSendCartError(error.message);
             console.log(error.message);
         }
     }
 }
 
-export const fetchCartData = (setCartIsLoaded) => {
+export const fetchCartData = (setCartIsLoaded, setFetchCartError) => {
     return async (dispatch) => {
         const fetchData = async () => {
             const response =
@@ -66,6 +67,7 @@ export const fetchCartData = (setCartIsLoaded) => {
             setCartIsLoaded(true);
         }
         catch (error) {
+            setFetchCartError(error.message);
             console.log(error.message);
         }
     }
