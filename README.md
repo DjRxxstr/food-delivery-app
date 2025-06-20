@@ -1,33 +1,39 @@
 # Food Delivery App
 
-A modern food delivery application built with **React**, **Redux**, and **Firebase**. This application allows users to browse food items, manage their cart, and place orders in real-time using Firebase Realtime Database.
+A modern food delivery application built with **React**, **Redux Toolkit**, and **Firebase Realtime Database**. This app allows users to browse meals, manage their cart, and place orders with real-time backend updates.
 
-## 🔧 Features
+## 📝 Project Overview
 
-- 🥘 Browse dynamic meal listings
-- 🛒 Add and remove items from cart
-- 💾 Temporary cart data storage in Firebase
-- ✅ Order placement and confirmation
-- 🌐 Global state management with Redux Toolkit
-- 📡 Real-time sync with Firebase Realtime Database
-- 📱 Responsive and mobile-friendly design
+This project demonstrates a full-stack food ordering workflow:
+- Users can browse a menu, add/remove items to/from their cart, and proceed through a modal-based checkout process.
+- Orders and cart data are synced in real-time with Firebase Realtime Database.
+- Robust error handling and loading states are implemented for all network operations.
+
+## 🔑 Key Features
+
+- 🥘 Dynamic meal listing and menu browsing
+- 🛒 Add, remove, and update items in a persistent cart
+- 💾 Cart and order data stored in Firebase Realtime Database
+- ✅ Modal-based checkout with order confirmation and error handling
+- 🌐 Global state management using Redux Toolkit
+- 📡 Real-time data sync between frontend and backend
+- 📱 Responsive and user-friendly UI
 
 ## 🚀 Tech Stack
 
 - **Frontend**: React (with Vite)
-- **State Management**: Redux + Redux Toolkit
+- **State Management**: Redux Toolkit
 - **Backend**: Firebase Realtime Database
-- **Authentication**: Anonymous sign-in via Firebase Auth
-- **Styling**: Tailwind CSS or plain CSS Modules (based on your project)
+- **Styling**: Plain CSS
 
 ## 📁 Project Structure
 
 ```
 food-delivery-app/
 ├── src/               # React + Redux application
-│   ├── components/    # UI components
-│   ├── store/         # Redux slices and actions
-│   └── firebase.js    # Firebase initialization
+│   ├── components/    # UI components (Cart, Checkout, Menu, etc.)
+│   ├── store/         # Redux slices and async actions
+│   └── ...
 ├── public/            # Static files
 └── package.json       # Project metadata and scripts
 ```
@@ -65,7 +71,6 @@ App will be available at `http://localhost:5173`
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Create a project and set up Realtime Database
 3. Use the following database rules for development:
-4. (Note - If you want proper authentication, enable desired type of authentication)
 
 ```json
 {
@@ -75,7 +80,6 @@ App will be available at `http://localhost:5173`
   }
 }
 ```
-
 
 ## 📜 Available Scripts
 
